@@ -8,6 +8,8 @@ from dotenv import load_dotenv
 
 from app.prompts.prompt_logger import log_prompt_version
 
+from app.prompts.ab_experiment import get_prompt_variant
+
 load_dotenv()
 
 class WebSearchAgent:
@@ -20,8 +22,13 @@ class WebSearchAgent:
     @traceable
 
     def search(self, query: str):
+        
+        variant = get_prompt_variant()
 
-        log_prompt_version("web_search_agent")
+        log_prompt_version(
+    "web_search_agent",
+    variant
+)
 
         response = self.client.search(
             query=query,
