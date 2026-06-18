@@ -1,5 +1,8 @@
 from typing import TypedDict
+
 from langgraph.graph import StateGraph, END
+
+from langsmith import traceable
 
 class AgentState(TypedDict):
     query: str
@@ -7,11 +10,13 @@ class AgentState(TypedDict):
     results: list[str]
     final_answer: str
 
+@traceable
 def planner_node(state: AgentState):
     query = state["query"]
 
     return {"plan": [f"Research: {query}", "Summarize findings"]}
 
+@traceable
 def researcher_node(state: AgentState):
     plan = state["plan"]
 
@@ -19,6 +24,7 @@ def researcher_node(state: AgentState):
         "results": [f"Completed: {task}" for task in plan]
     }
 
+@traceable
 def synthesizer_node(state: AgentState):
     results = state["results"]
 

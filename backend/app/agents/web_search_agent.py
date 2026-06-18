@@ -2,6 +2,7 @@ from tavily import TavilyClient
 
 import os
 
+from langsmith import traceable
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -12,6 +13,8 @@ class WebSearchAgent:
         self.client = TavilyClient(
         api_key=os.getenv("TAVILY_API_KEY")
     )
+
+    @traceable
 
     def search(self, query: str):
 

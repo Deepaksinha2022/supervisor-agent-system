@@ -1,5 +1,8 @@
+from langsmith import traceable
+
 class SynthesisAgent:
 
+    @traceable
     def synthesize(
         self,
         web_results,
