@@ -1,5 +1,7 @@
 from langsmith import traceable
 
+from app.prompts.prompt_logger import log_prompt_version
+
 class SynthesisAgent:
 
     @traceable
@@ -8,7 +10,8 @@ class SynthesisAgent:
         web_results,
         retrieval_results
     ):
-
+        log_prompt_version("synthesis_agent")
+        
         return {
             "web_results": web_results,
             "retrieval_results": retrieval_results

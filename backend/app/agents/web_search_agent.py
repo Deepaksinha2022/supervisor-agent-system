@@ -5,6 +5,9 @@ import os
 from langsmith import traceable
 
 from dotenv import load_dotenv
+
+from app.prompts.prompt_logger import log_prompt_version
+
 load_dotenv()
 
 class WebSearchAgent:
@@ -17,6 +20,8 @@ class WebSearchAgent:
     @traceable
 
     def search(self, query: str):
+
+        log_prompt_version("web_search_agent")
 
         response = self.client.search(
             query=query,
