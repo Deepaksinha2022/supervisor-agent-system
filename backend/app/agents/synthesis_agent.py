@@ -1,5 +1,11 @@
 from langsmith import traceable
 
+from langsmith import traceable
+
+from app.prompts.prompt_logger import log_prompt_version
+
+from app.prompts.ab_experiment import get_prompt_variant
+
 from app.prompts.prompt_logger import log_prompt_version
 
 class SynthesisAgent:
@@ -10,7 +16,12 @@ class SynthesisAgent:
         web_results,
         retrieval_results
     ):
-        log_prompt_version("synthesis_agent")
+        variant = get_prompt_variant()
+
+        log_prompt_version(
+    "synthesis_agent",
+    variant
+)
         
         return {
             "web_results": web_results,

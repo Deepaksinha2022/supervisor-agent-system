@@ -6,12 +6,19 @@ from langsmith import traceable
 
 from app.utils.state_manager import save_state
 
+from app.agents.web_search_agent import WebSearchAgent
+
+from app.agents.synthesis_agent import SynthesisAgent
+
 class AgentState(TypedDict):
     session_id: str
     query: str
     plan: list[str]
     results: list[str]
     final_answer: str
+
+web_agent = WebSearchAgent()
+synthesis_agent = SynthesisAgent()
 
 @traceable
 def planner_node(state: AgentState):
@@ -30,37 +37,46 @@ def planner_node(state: AgentState):
 
 @traceable
 def researcher_node(state: AgentState):
-    plan = state["plan"]
+
+    search_results = web_agent.search(
+        state["query"]
+    )
 
     save_state(
-    state["session_id"],
-    {
-        "query": state["query"],
-        "step": "researching",
-        "plan": state["plan"],
-        "results": [f"Completed: {task}" for task in plan]
-    }
-)
+        state["session_id"],
+        {
+            "query": state["query"],
+            "step": "researching",
+            "plan": state["plan"],
+            "results": search_results
+        }
+    )
+
     return {
-        "results": [f"Completed: {task}" for task in plan]
+        "results": search_results
     }
 
 @traceable
 def synthesizer_node(state: AgentState):
-    results = state["results"]
+
+    final_answer = synthesis_agent.synthesize(
+        web_results=state["results"],
+        retrieval_results=[]
+    )
 
     save_state(
-    state["session_id"],
-    {
-        "query": state["query"],
-        "step": "completed",
-        "plan": state["plan"],
-        "results": state["results"],
-        "final_answer": "\n".join(results)
-    }
-)
+        state["session_id"],
+        {
+            "query": state["query"],
+            "step": "completed",
+            "plan": state["plan"],
+            "results": state["results"],
+            "final_answer": str(final_answer)
+        }
+    )
+
     return {
-        "final_answer": "\n".join(results)
+        "final_answer": str(final_answer)
     }
 
 graph = StateGraph(AgentState)

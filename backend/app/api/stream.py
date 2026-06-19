@@ -1,25 +1,36 @@
 from fastapi import APIRouter
+
 from sse_starlette.sse import EventSourceResponse
+
 import asyncio
+
+from app.graphs.supervisor_graph import app
+
+import uuid
 
 router = APIRouter()
 
 async def event_generator():
 
-    agents = [
-        "Supervisor: Planning",
-        "Web Agent: Searching",
-        "Retrieval Agent: Fetching documents",
-        "Synthesis Agent: Generating answer"
-    ]
+    session_id = str(uuid.uuid4())
 
-    for agent in agents:
+    yield {"data": "Supervisor: Starting"}
 
-        yield {"data": agent}
-
-        await asyncio.sleep(1)
+    result = app.invoke(
+        {
+            "session_id": session_id,
+            "query": "What is Agentic AI?",
+            "plan": [],
+            "results": [],
+            "final_answer": ""
+        }
+    )
 
     yield {"data": "Workflow Complete"}
+
+    yield {
+        "data": result["final_answer"]
+    }
 
 
 @router.get("/stream")
