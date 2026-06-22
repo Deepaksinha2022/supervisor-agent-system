@@ -1,18 +1,26 @@
-import chromadb
+from backend.app.rag.hybrid_retriever import (
+    HybridRetriever
+)
 
 from langsmith import traceable
 
+
 class RetrievalAgent:
 
-    def __init__(self):
+    def __init__(self, chunks):
 
-        self.client = chromadb.PersistentClient(
-            path="chroma_db"
+        self.retriever = HybridRetriever(
+            chunks
         )
 
     @traceable
-    def get_collection(self, collection_name: str):
+    async def retrieve(
+        self,
+        query: str
+    ):
 
-        return self.client.get_or_create_collection(
-            name=collection_name
+        results = await self.retriever.retrieve(
+            query
         )
+
+        return results
