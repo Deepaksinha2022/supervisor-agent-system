@@ -1,6 +1,6 @@
 import asyncio
 
-from app.agents.supervisor_agent import (
+from backend.app.agents.supervisor_agent import (
     SupervisorAgent
 )
 
@@ -31,11 +31,21 @@ async def main():
         chunks
     )
 
-    response = await supervisor.run(
+    response1 = await supervisor.run(
+    "What is Redis?"
+)
+
+    print("\nFIRST RUN:\n")
+
+    print(response1)
+
+    response2 = await supervisor.run(
         "What is Redis?"
     )
 
-    print(response)
+    print("\nSECOND RUN:\n")
+
+    print(response2)
 
 
 asyncio.run(main())

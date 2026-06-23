@@ -26,59 +26,151 @@ from backend.app.agents.critic_agent import (
     CriticAgent
 )
 
+from backend.app.tools.tool_registry import (
+    ToolRegistry
+)
+
+from backend.app.tools.tool_executor import (
+    ToolExecutor
+)
+
+from backend.app.tools.calculator_tool import (
+    CalculatorTool
+)
+
+from backend.app.models.model_registry import (
+    ModelRegistry
+)
+
+from backend.app.models.model_router import (
+    ModelRouter
+)
+
+from backend.app.metrics.cost_tracker import (
+    CostTracker
+)
+
 class TaskExecutor:
 
     def __init__(self):
 
-        self.compare_agent = CompareAgent()
+            self.registry = AgentRegistry()
 
-        self.registry = AgentRegistry()
+            tool_registry = ToolRegistry()
 
-        self.research_agent = ResearchAgent()
+            tool_registry.register(
+                "calculator_tool",
+                CalculatorTool()
+            )
 
-        self.summary_agent = SummaryAgent()
+            self.tool_executor = ToolExecutor(
+                tool_registry
+            )
 
-        self.reflection_agent = ReflectionAgent()
+            self.model_registry = ModelRegistry()
 
-        self.critic_agent = CriticAgent()
+            self.model_registry.register(
+                "small_model",
+                {
+                    "name": "TinyLLM",
+                    "cost_per_call": 0.0001,
+                    "latency_ms": 100
+                }
+            )
 
-        self.registry.register(
-            "critic_agent",
-            self.critic_agent
-        )
+            self.model_registry.register(
+                "medium_model",
+                {
+                    "name": "Mistral",
+                    "cost_per_call": 0.001,
+                    "latency_ms": 500
+                }
+            )
 
-        self.registry.register(
-            "compare_agent",
-            self.compare_agent
-        )
+            self.model_registry.register(
+                "large_model",
+                {
+                    "name": "Llama",
+                    "cost_per_call": 0.01,
+                    "latency_ms": 2000
+                }
+            )
 
-        self.registry.register(
-            "research_agent",
-            self.research_agent
-        )
+            self.model_router = ModelRouter(
+                self.model_registry
+            )
 
-        self.registry.register(
-             "summary_agent",
+            self.cost_tracker = CostTracker()
+
+            self.research_agent = ResearchAgent(
+                self.tool_executor
+            )
+
+            self.compare_agent = CompareAgent()
+
+            self.summary_agent = SummaryAgent()
+
+            self.reflection_agent = ReflectionAgent()
+
+            self.critic_agent = CriticAgent()
+
+            self.registry.register(
+                "research_agent",
+                self.research_agent
+            )
+
+            self.registry.register(
+                "compare_agent",
+                self.compare_agent
+            )
+
+            self.registry.register(
+                "summary_agent",
                 self.summary_agent
-        )
+            )
 
-        self.registry.register(
-            "reflection_agent",
-            self.reflection_agent
-        )
+            self.registry.register(
+                "reflection_agent",
+                self.reflection_agent
+            )
 
-        self.router = DynamicAgentRouter(
-        self.registry
-        )
+            self.registry.register(
+                "critic_agent",
+                self.critic_agent
+            )
+
+            self.router = DynamicAgentRouter(
+                self.registry
+            )
 
     async def execute(
         self,
         task_name: str,
         route: str
-    ):
+        ):
 
         agent = self.router.route(
             task_name
+        )
+
+        model = self.model_router.route(
+            task_name
+        )
+
+        self.cost_tracker.track(
+            task_name,
+            model
+        )
+
+
+        print(
+            f"\nModel Selected: "
+            f"{model['name']}"
+        )
+
+        print(
+            f"Cost: "
+            f"{model['cost_per_call']}"
         )
 
         if agent:
@@ -101,7 +193,8 @@ class TaskExecutor:
                 "reflection": reflection,
                 "critic":critic,
                 "approved":critic["score"]>=0.80,
-                "needs_retry": critic["score"] < 0.80
+                "needs_retry": critic["score"] < 0.80,
+                "requires_human_approval": False
             }
 
         return (

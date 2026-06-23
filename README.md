@@ -328,3 +328,129 @@ Developer Push
 ## Demo Video
 
 [Demo Video Link Placeholder]
+
+
+## Supervisor Agent System
+
+Enterprise-style multi-agent system built with FastAPI, Redis, LangGraph-inspired orchestration, semantic caching, dynamic routing, evaluation, and observability.
+
+### Milestone 1 — Persistence & Memory ✅
+
+* Redis state persistence
+* Session management
+* Conversation history
+* Agent checkpointing
+* Pause/Resume workflows
+
+### Milestone 2 — RAG Integration 🟡
+
+* Retrieval architecture designed
+* Knowledge integration groundwork completed
+* Production-grade RAG improvements pending
+
+### Milestone 3 — Agent Intelligence ✅
+
+* Planning Agent
+* Dynamic Task Decomposition
+* Dynamic Agent Routing
+* Tool Calling Framework
+* Multi-step Workflow Execution
+* Dependency-aware Task Scheduling
+
+### Milestone 4 — Advanced Agentic Features ✅
+
+* Reflection Agent
+* Critic Agent
+* Self-correction Loop
+* Retry Mechanism
+* Human Approval Workflow
+* Workflow Resume Support
+* Execution Metrics Tracking
+
+### Milestone 5 — Performance & Optimization ✅
+
+#### Semantic Cache
+
+* Semantic similarity search
+* Cache hit/miss tracking
+* TTL expiration
+* Cache cleanup
+
+#### Redis Persistence
+
+* Redis-backed cache storage
+* Redis fallback lookup
+* Persistent cache management
+
+#### Model Routing
+
+* Complexity Classification
+* Dynamic Model Selection
+* Cost-aware Routing
+* Latency-aware Metadata
+
+#### Cost Tracking
+
+* Cost per task
+* Cost per model
+* Workflow cost monitoring
+
+#### Session KV Cache
+
+* Session context storage
+* Context reuse
+* Multi-turn memory optimization
+
+### Milestone 6 — Evaluation & Observability ✅ (Architecture Version)
+
+#### Benchmark Suite
+
+* Workflow benchmarking
+* Success rate tracking
+* Latency tracking
+
+#### Evaluation Framework
+
+* Hallucination evaluation framework
+* Citation evaluation framework
+* Regression testing framework
+
+#### Observability
+
+* Cost tracking dashboard
+* Cache metrics dashboard
+* Workflow performance dashboard
+
+### Current Architecture
+
+Supervisor Agent
+
+* Planning
+* Routing
+* Reflection
+* Critic
+* Human Approval
+* Tool Execution
+* Semantic Cache
+* Redis Persistence
+* Model Routing
+* Cost Tracking
+* Evaluation Framework
+* Observability Dashboard
+
+### Enterprise Upgrade Backlog
+
+The following enterprise-grade capabilities are intentionally tracked as future upgrades:
+
+* RAGAS Evaluation
+* LLM-as-Judge Evaluation
+* Groundedness/Faithfulness Metrics
+* Automated Regression Dataset
+* Locust Load Testing
+* P50/P95/P99 Latency Analysis
+* Prometheus
+* Grafana
+* OpenTelemetry
+* Distributed Tracing
+* Alerting
+* Production Monitoring

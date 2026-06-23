@@ -283,3 +283,90 @@ class PlanManager:
             "failed_tasks": failed_tasks,
             "total_execution_time": total_execution_time
         }
+    
+    def set_pending_approval(
+            self,
+            workflow_id,
+            task_id
+        ):
+
+        plan = self.get_plan(
+            workflow_id
+        )
+
+        for task in plan:
+
+            if task["task_id"] == task_id:
+
+                task["status"] = (
+                    "pending_approval"
+                )
+                break
+
+        self.save_plan(
+            workflow_id,
+            plan
+        )
+    
+    def approve_task(
+            self,
+            workflow_id,
+            task_id
+        ):
+
+        plan = self.get_plan(
+            workflow_id
+        )
+
+        for task in plan:
+
+            if task["task_id"] == task_id:
+
+                task["status"] = (
+                    "completed"
+                )
+                break
+
+        self.save_plan(
+            workflow_id,
+            plan
+        )
+
+    def reject_task(
+            self,
+            workflow_id,
+            task_id
+        ):
+
+        plan = self.get_plan(
+                workflow_id
+            )
+
+        for task in plan:
+
+            if task["task_id"] == task_id:
+
+                    task["status"] = (
+                        "failed"
+                    )
+                    break
+
+        self.save_plan(
+                workflow_id,
+                plan
+            )
+        
+    def has_pending_approval(
+            self,
+            workflow_id
+        ):
+
+        plan = self.get_plan(
+            workflow_id
+        )
+
+        return any(
+            task["status"]
+            == "pending_approval"
+            for task in plan
+        )

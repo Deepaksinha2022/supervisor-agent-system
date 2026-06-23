@@ -5,6 +5,13 @@ from backend.app.agents.base_agent import (
 
 class ResearchAgent(BaseAgent):
 
+
+    def __init__(
+            self,
+            tool_executor=None
+        ):
+        self.tool_executor = tool_executor
+
     @property
     def capabilities(self):
         return [
@@ -16,9 +23,19 @@ class ResearchAgent(BaseAgent):
     async def execute(
         self,
         task_name: str
-    ):
+        ):
 
-        return (
-            f"Research completed: "
-            f"{task_name}"
-        )
+        if self.tool_executor:
+
+            tool_result = (
+                await self.tool_executor.auto_execute(
+                    "math calculation",
+                    "10 + 20"
+                    )
+                )
+
+            return (
+                f"Research completed: "
+                f"{task_name} | "
+                f"Tool Result: {tool_result}"
+                )

@@ -10,6 +10,10 @@ from backend.app.agents.task_executor import (
     TaskExecutor
 )
 
+from backend.app.cache.cache_manager import (
+    CacheManager
+)
+
 import asyncio
 
 import time
@@ -27,6 +31,8 @@ class SupervisorAgent:
 
         self.task_executor = TaskExecutor()
 
+        self.cache_manager = CacheManager()
+
         self.agent_routes = {
         "Research": "retrieval_agent",
         "Compare": "compare_agent",
@@ -36,8 +42,26 @@ class SupervisorAgent:
     async def run(
         self,
         query
-    ):
+        ):
+        embedding = self.get_embedding(
+        query
+        )
 
+        cached = self.cache_manager.lookup(
+            query,
+            embedding
+        )
+
+        if cached["cache_hit"]:
+
+            print(
+            "\nCache Hit\n"
+        )
+
+            return cached["response"][
+                "response"
+            ]
+    
         retrieval_results = (
             await self.retrieval_agent.retrieve(
                 query
@@ -50,6 +74,11 @@ class SupervisorAgent:
                 web_results=[],
                 retrieval_results=retrieval_results
             )
+        )
+        self.cache_manager.store(
+            query,
+            embedding,
+            answer
         )
 
         return answer
@@ -79,6 +108,16 @@ class SupervisorAgent:
     ):
 
         while True:
+            
+            if plan_manager.has_pending_approval(
+                workflow_id
+                ):
+
+                print(
+                    "\nWorkflow Paused: Waiting For Human Approval\n"
+                )
+
+                break
 
             plan_manager.requeue_failed_tasks(
                 workflow_id
@@ -177,6 +216,15 @@ class SupervisorAgent:
             result
         )
 
+        if result["requires_human_approval"]:
+
+            plan_manager.set_pending_approval(
+                workflow_id,
+                task["task_id"]
+            )
+
+            return
+
         if result["approved"]:
 
             plan_manager.update_task_status(
@@ -192,3 +240,10 @@ class SupervisorAgent:
                 task["task_id"],
                 "failed"
         )
+            
+    def get_embedding(
+        self,
+        query
+        ):
+
+        return [0.1, 0.2, 0.3]
